@@ -106,6 +106,13 @@ class Dynamixel:
                 print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
             time.sleep(0.05)
     def writeOperatingMode(self, DXL_IDs, data):
+        """
+        基本は下記URLと同じだろう
+        https://emanual.robotis.com/docs/en/dxl/x/xl330-m288/#operating-mode11
+        
+        詳細はe-Manualからoperating modeを調べる
+        https://emanual.robotis.com/docs/en/dxl/
+        """
         for DXL_ID in DXL_IDs:
             dxl_comm_result = self.packetHandler.write1ByteTxOnly(self.portHandler, DXL_ID, Dynamixel.ADDR_OPERATING_MODE, int(data[DXL_IDs.index(DXL_ID)]))
             if dxl_comm_result != COMM_SUCCESS:
