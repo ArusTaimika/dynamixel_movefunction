@@ -29,23 +29,24 @@ def testReadWriteVelocity(dxl: Dynamixel, DXL_IDs):
     # time.sleep(100)
 
     i = 0
+    try:
+        print("------- run test code -------")
+        while True:
+            # dxl.writeGoalVelocity(DXL_IDs, [4] * len(DXL_IDs))
+            for i in range(0, 200,1):
+                dxl.writeGoalVelocity(DXL_IDs, [i] * len(DXL_IDs)) # 基本どの関数も，IDのリスト，値のリストで動く
+                time.sleep(0.1)
+            for i in range(200, -200, -1):
+                dxl.writeGoalVelocity(DXL_IDs, [i] * len(DXL_IDs))
+                time.sleep(0.1)
+            for i in range(-200, 0, 1):
+                dxl.writeGoalVelocity(DXL_IDs, [i] * len(DXL_IDs))
+                time.sleep(0.1)
 
-    while True:
-        # dxl.writeGoalVelocity(DXL_IDs, [4] * len(DXL_IDs))
-        for i in range(0, 200,1):
-            dxl.writeGoalVelocity(DXL_IDs, [i] * len(DXL_IDs)) # 基本どの関数も，IDのリスト，値のリストで動く
-            time.sleep(0.1)
-        for i in range(200, -200, -1):
-            dxl.writeGoalVelocity(DXL_IDs, [i] * len(DXL_IDs))
-            time.sleep(0.1)
-        for i in range(-200, 0, 1):
-            dxl.writeGoalVelocity(DXL_IDs, [i] * len(DXL_IDs))
-            time.sleep(0.1)
-
-    # dyn.writeGoalVelocity(DXL_IDs, [0] * len(DXL_IDs))
-    # time.sleep(1)
-    # # Torque off
-    # dyn.writeTorqueEnable(DXL_IDs, [0]* len(DXL_IDs))
+    except KeyboardInterrupt:
+        print("------- end test code -------")
+        #Torque off
+        dxl.writeTorqueEnable(DXL_IDs, [0]* len(DXL_IDs))
 
 
 if __name__ == "__main__":
