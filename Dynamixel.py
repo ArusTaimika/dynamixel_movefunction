@@ -106,6 +106,13 @@ class Dynamixel:
                 print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
             time.sleep(0.05)
     def writeOperatingMode(self, DXL_IDs, data):
+        """
+        基本は下記URLと同じだろう
+        https://emanual.robotis.com/docs/en/dxl/x/xl330-m288/#operating-mode11
+        
+        詳細はe-Manualからoperating modeを調べる
+        https://emanual.robotis.com/docs/en/dxl/
+        """
         for DXL_ID in DXL_IDs:
             dxl_comm_result = self.packetHandler.write1ByteTxOnly(self.portHandler, DXL_ID, Dynamixel.ADDR_OPERATING_MODE, int(data[DXL_IDs.index(DXL_ID)]))
             if dxl_comm_result != COMM_SUCCESS:
@@ -129,7 +136,10 @@ class Dynamixel:
             if dxl_comm_result != COMM_SUCCESS:
                 print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
             time.sleep(0.05)
-
+    
+    """
+     現在の状態を取得する関数
+    """
     def readPresentPWM(self, DXL_IDs, data):
         return self.groupSyncRead(Dynamixel.ADDR_PRESENT_PWM, 2, DXL_IDs)
     def readPresentVelocity(self, DXL_IDs):
@@ -139,6 +149,9 @@ class Dynamixel:
     def readPresentCurrent(self, DXL_IDs):
         return self.groupSyncRead(Dynamixel.ADDR_PRESENT_CURRENT, 2, DXL_IDs)
 
+    """
+     ACTRの目標値を送信する関数
+    """
     def writeGoalPWM(self, DXL_IDs, data):
         self.groupSyncWrite(Dynamixel.ADDR_GOAL_PWM, 2, DXL_IDs, data)
     def writeGoalCurrent(self, DXL_IDs, data):
@@ -203,6 +216,10 @@ class Dynamixel:
         signed_int = (int(signed_hex^mask)*-1)-1  if (signed_hex & signed) else int(signed_hex)
         return signed_int
 
+"""
+ 以下テストコード
+ 下記関数をtest.pyにコピーして使用することで，testが可能
+"""
 def timeMesurement( func, num, arg1=None, arg2=None, arg3=None ):
     start = time.time()
     if num==0:
