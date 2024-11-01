@@ -12,9 +12,9 @@ class Dynamixel:
     # Addr, Size, Name, RW, Default, Range, Unit
     # 8	1	Baud Rate	RW	1	0 ~ 7	-
     ADDR_RETURN_DELAY_TIME  = 9 # 1 RW	250	0 ~ 254	2 [μsec]
-    ADDR_DRIVE_MODE = 8    # 1 RW	0	0 ~ 5	-
+    ADDR_DRIVE_MODE = 10   # 1 RW	0	0 ~ 5	-
     #     1: Reverse mode
-    ADDR_OPERATING_MODE     = 0    # 1 RW	3	0 ~ 16	-
+    ADDR_OPERATING_MODE     = 11    # 1 RW	3	0 ~ 16	-
     #     0: Current Control Mode
     #     1: Velocity Control Mode
     #     3: Position Control Mode
@@ -215,111 +215,118 @@ class Dynamixel:
             mask = mask | (0x01<<num)
         signed_int = (int(signed_hex^mask)*-1)-1  if (signed_hex & signed) else int(signed_hex)
         return signed_int
+    
+class Test_Dynamixel:
+    def __init__(self):
+        pass
+    
+    """
+    以下テストコード
+    下記関数をtest.pyにコピーして使用することで，testが可能
+    引数：
+        dyn : Dynamixel class
+        DXL_IDs : ACTR ID
+    """
+    def timeMesurement(self, func, num, arg1=None, arg2=None, arg3=None ):
+        start = time.time()
+        if num==0:
+            ret = func()
+        elif num==1:
+            ret = func(arg1)
+        elif num==2:
+            ret = func(arg1, arg2)
+        else:
+            ret = func(arg1, arg2, arg3)        
+        elapsed_time = time.time() - start
+        # print("Spent time = %.3f(msec)" % (elapsed_time*1000))
+        return ret, elapsed_time
 
-"""
- 以下テストコード
- 下記関数をtest.pyにコピーして使用することで，testが可能
-"""
-def timeMesurement( func, num, arg1=None, arg2=None, arg3=None ):
-    start = time.time()
-    if num==0:
-        ret = func()
-    elif num==1:
-        ret = func(arg1)
-    elif num==2:
-        ret = func(arg1, arg2)
-    else:
-        ret = func(arg1, arg2, arg3)        
-    elapsed_time = time.time() - start
-    # print("Spent time = %.3f(msec)" % (elapsed_time*1000))
-    return ret, elapsed_time
+    def testReadWritePosition(self, dyn, DXL_IDs):
+        dyn.writeTorqueEnable(DXL_IDs, [0] * len(DXL_IDs))
+        dyn.writeOperatingMode(DXL_IDs, [3] * len(DXL_IDs))
+        dyn.writeTorqueEnable(DXL_IDs, [1] * len(DXL_IDs))
 
-def testReadWritePosition(dyn, DXL_IDs):
-    dyn.writeTorqueEnable(DXL_IDs, [0, 0])
-    dyn.writeOperatingMode(DXL_IDs, [3, 3])
-    dyn.writeTorqueEnable(DXL_IDs, [1, 1])
+        start = time.time()
+        dyn.writeGoalPosition(DXL_IDs, [90/0.088] * len(DXL_IDs))
+        elapsed_time = time.time() - start
+        print ("elapsed_time(write):{0}".format(elapsed_time*1000) + "[msec]")
+        time.sleep(1.0)
+        start = time.time()
+        pos = dyn.readPresentPosition(DXL_IDs)
+        elapsed_time = time.time() - start
+        print(pos)
+        print ("elapsed_time(read):{0}".format(elapsed_time*1000) + "[msec]")
+        dyn.writeGoalPosition(DXL_IDs, [0] * len(DXL_IDs))
+        time.sleep(1.0)
+        start = time.time()
+        pos = dyn.readPresentPosition(DXL_IDs)
+        elapsed_time = time.time() - start
+        print(pos)
+        print ("elapsed_time(read):{0}".format(elapsed_time*1000) + "[msec]")
+        dyn.writeTorqueEnable(DXL_IDs, [0] * len(DXL_IDs))
+        # ret, elapsed_time = timeMesurement(dyn.writeGoalPosition, 2, DXL_IDs, [0,0])
+        # print("Spent time = %.3f(msec)" % (elapsed_time*1000))
 
-    start = time.time()
-    dyn.writeGoalPosition(DXL_IDs, [90/0.088,90/0.088])
-    elapsed_time = time.time() - start
-    print ("elapsed_time(write):{0}".format(elapsed_time*1000) + "[msec]")
-    time.sleep(1.0)
-    start = time.time()
-    pos = dyn.readPresentPosition(DXL_IDs)
-    elapsed_time = time.time() - start
-    print(pos)
-    print ("elapsed_time(read):{0}".format(elapsed_time*1000) + "[msec]")
-    dyn.writeGoalPosition(DXL_IDs, [0,0])
-    time.sleep(1.0)
-    start = time.time()
-    pos = dyn.readPresentPosition(DXL_IDs)
-    elapsed_time = time.time() - start
-    print(pos)
-    print ("elapsed_time(read):{0}".format(elapsed_time*1000) + "[msec]")
-    dyn.writeTorqueEnable(DXL_IDs, [0, 0])
-    # ret, elapsed_time = timeMesurement(dyn.writeGoalPosition, 2, DXL_IDs, [0,0])
-    # print("Spent time = %.3f(msec)" % (elapsed_time*1000))
+    def testReadWriteVelocity(self, dyn, DXL_IDs):
+        dyn.writeTorqueEnable(DXL_IDs, [0] * len(DXL_IDs))
+        dyn.writeOperatingMode(DXL_IDs, [1]  * len(DXL_IDs))
+        dyn.writeTorqueEnable(DXL_IDs, [1]  * len(DXL_IDs))
 
-def testReadWriteVelocity(dyn, DXL_IDs):
-    dyn.writeTorqueEnable(DXL_IDs, [0] * 2)
-    dyn.writeOperatingMode(DXL_IDs, [1] * 2)
-    dyn.writeTorqueEnable(DXL_IDs, [1] * 2)
+        start = time.time()
+        dyn.writeGoalVelocity(DXL_IDs, [200]  * len(DXL_IDs))
+        elapsed_time = time.time() - start
+        print ("elapsed_time(write):{0}".format(elapsed_time*1000) + "[msec]")
+        time.sleep(1.0)
+        start = time.time()
+        vel = dyn.readPresentVelocity(DXL_IDs)
+        elapsed_time = time.time() - start
+        print(vel)
+        print ("elapsed_time(read):{0}".format(elapsed_time*1000) + "[msec]")
+        dyn.writeGoalVelocity(DXL_IDs, [0] * len(DXL_IDs))
+        time.sleep(1.0)
+        start = time.time()
+        vel = dyn.readPresentVelocity(DXL_IDs)
+        elapsed_time = time.time() - start
+        print(vel)
+        print ("elapsed_time(read):{0}".format(elapsed_time*1000) + "[msec]")
+        dyn.writeTorqueEnable(DXL_IDs, [0] * len(DXL_IDs))
 
-    start = time.time()
-    dyn.writeGoalVelocity(DXL_IDs, [200] * 2)
-    elapsed_time = time.time() - start
-    print ("elapsed_time(write):{0}".format(elapsed_time*1000) + "[msec]")
-    time.sleep(1.0)
-    start = time.time()
-    vel = dyn.readPresentVelocity(DXL_IDs)
-    elapsed_time = time.time() - start
-    print(vel)
-    print ("elapsed_time(read):{0}".format(elapsed_time*1000) + "[msec]")
-    dyn.writeGoalVelocity(DXL_IDs, [0,0])
-    time.sleep(1.0)
-    start = time.time()
-    vel = dyn.readPresentVelocity(DXL_IDs)
-    elapsed_time = time.time() - start
-    print(vel)
-    print ("elapsed_time(read):{0}".format(elapsed_time*1000) + "[msec]")
-    dyn.writeTorqueEnable(DXL_IDs, [0, 0])
+    def testReadWriteCurrent(self, dyn, DXL_IDs):
+        dyn.writeTorqueEnable(DXL_IDs, [0] * len(DXL_IDs))
+        dyn.writeOperatingMode(DXL_IDs, [0] * len(DXL_IDs))
+        dyn.writeTorqueEnable(DXL_IDs, [1] * len(DXL_IDs))
 
-def testReadWriteCurrent(dyn, DXL_IDs):
-    dyn.writeTorqueEnable(DXL_IDs, [0, 0])
-    dyn.writeOperatingMode(DXL_IDs, [0] * 2)
-    dyn.writeTorqueEnable(DXL_IDs, [1, 1])
+        start = time.time()
+        dyn.writeGoalCurrent(DXL_IDs, [-100] * len(DXL_IDs))
+        elapsed_time = time.time() - start
+        print ("elapsed_time:{0}".format(elapsed_time*1000) + "[msec]")
+        time.sleep(1.0)
+        start = time.time()
+        vel = dyn.readPresentCurrent(DXL_IDs)
+        elapsed_time = time.time() - start
+        print(vel)
+        print ("elapsed_time(read):{0}".format(elapsed_time*1000) + "[msec]")
+        dyn.writeGoalCurrent(DXL_IDs, [100] * len(DXL_IDs))
+        time.sleep(1.0)
+        start = time.time()
+        vel = dyn.readPresentCurrent(DXL_IDs)
+        elapsed_time = time.time() - start
+        print(vel)
+        print ("elapsed_time(read):{0}".format(elapsed_time*1000) + "[msec]")
+        dyn.writeGoalCurrent(DXL_IDs, [0]  * len(DXL_IDs))
+        time.sleep(0.5)
+        dyn.writeTorqueEnable(DXL_IDs, [0] * len(DXL_IDs))
 
-    start = time.time()
-    dyn.writeGoalCurrent(DXL_IDs, [-100] * 2)
-    elapsed_time = time.time() - start
-    print ("elapsed_time:{0}".format(elapsed_time*1000) + "[msec]")
-    time.sleep(1.0)
-    start = time.time()
-    vel = dyn.readPresentCurrent(DXL_IDs)
-    elapsed_time = time.time() - start
-    print(vel)
-    print ("elapsed_time(read):{0}".format(elapsed_time*1000) + "[msec]")
-    dyn.writeGoalCurrent(DXL_IDs, [100] * 2)
-    time.sleep(1.0)
-    start = time.time()
-    vel = dyn.readPresentCurrent(DXL_IDs)
-    elapsed_time = time.time() - start
-    print(vel)
-    print ("elapsed_time(read):{0}".format(elapsed_time*1000) + "[msec]")
-    dyn.writeGoalCurrent(DXL_IDs, [0] * 2)
-    time.sleep(0.5)
-    dyn.writeTorqueEnable(DXL_IDs, [0, 0])
-
-def testReadSettings(dyn, DXL_IDs):
-    start = time.time()
-    print(dyn.readReturnDelayTime(DXL_IDs))
-    print(dyn.readDriveMode(DXL_IDs))
-    print(dyn.readOperatingMode(DXL_IDs))
-    print(dyn.readTorqueEnable(DXL_IDs))
-    print(dyn.readLED(DXL_IDs))
-    print(dyn.readStatusReturnLevel(DXL_IDs))
-    elapsed_time = time.time() - start
-    print ("elapsed_time(read):{0}".format(elapsed_time*1000) + "[msec]")
+    def testReadSettings(dyn, DXL_IDs):
+        start = time.time()
+        print(dyn.readReturnDelayTime(DXL_IDs))
+        print(dyn.readDriveMode(DXL_IDs))
+        print(dyn.readOperatingMode(DXL_IDs))
+        print(dyn.readTorqueEnable(DXL_IDs))
+        print(dyn.readLED(DXL_IDs))
+        print(dyn.readStatusReturnLevel(DXL_IDs))
+        elapsed_time = time.time() - start
+        print ("elapsed_time(read):{0}".format(elapsed_time*1000) + "[msec]")
 
 if __name__ == '__main__':
     DXL_IDs                      = [1, 2]
@@ -330,8 +337,9 @@ if __name__ == '__main__':
     DEVICENAME                  = '/dev/tty.usbserial-FT6Z5XDE' # for macOS
     dyn = Dynamixel(DEVICENAME, BAUDRATE)
     dyn.setRecommendedValue(DXL_IDs)
-
-    testReadWritePosition(dyn, DXL_IDs)
-    testReadWriteVelocity(dyn, DXL_IDs)
-    testReadWriteCurrent(dyn, DXL_IDs)
-    testReadSettings(dyn, DXL_IDs)
+    
+    test_dynamixel = Test_Dynamixel()
+    test_dynamixel.testReadWritePosition(dyn, DXL_IDs)
+    test_dynamixel.testReadWriteVelocity(dyn, DXL_IDs)
+    test_dynamixel.testReadWriteCurrent(dyn, DXL_IDs)
+    test_dynamixel.testReadSettings(dyn, DXL_IDs)

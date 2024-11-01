@@ -1,6 +1,6 @@
 import time
 
-from Dynamixel import Dynamixel
+from Dynamixel import Dynamixel, Test_Dynamixel
 
 
 def __init__():
@@ -9,10 +9,23 @@ def __init__():
     DEVICENAME = "/dev/ttyUSB0" # 接続されているポート指定
     dxl = Dynamixel(DEVICENAME, BAUDRATE)   # Dynamixelクラスイニシャライズ
     dxl.setRecommendedValue(DXL_IDs)        # 動かすサーボの初期化
-    testReadWriteVelocity(dxl, DXL_IDs)     # テストコード
+    
+    print("--------------| Test start |--------------")
+    test_dynamixel = Test_Dynamixel()
+    test_dynamixel.testReadWriteCurrent(dxl, DXL_IDs)     # テスト関数呼び出し
+    test_dynamixel.testReadWritePosition(dxl, DXL_IDs)    # テスト関数呼び出し
+    test_dynamixel.testReadWriteVelocity(dxl, DXL_IDs)    # テスト関数呼び出し
+    print("--------------| End start |--------------")
+    #testwriteroop(dxl, DXL_IDs)     # 無限ループテストコード
 
+def testwriteroop(dxl: Dynamixel, DXL_IDs):
+    """_summary_
+        無限ループテストコード
 
-def testReadWriteVelocity(dxl: Dynamixel, DXL_IDs):
+    Args:
+        dxl (Dynamixel): Dynamixel class
+        DXL_IDs (_type_): ID list
+    """
     # Torque off
     dxl.writeTorqueEnable(DXL_IDs, [0] * len(DXL_IDs))
 
