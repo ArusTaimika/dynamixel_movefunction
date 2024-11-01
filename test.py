@@ -11,9 +11,9 @@ def __init__():
     dxl.setRecommendedValue(DXL_IDs)        # 動かすサーボの初期化
     
     test_dynamixel = Test_Dynamixel()
-    test_dynamixel.testReadWriteCurrent     # テスト関数呼び出し
-    test_dynamixel.testReadWritePosition    # テスト関数呼び出し
-    test_dynamixel.testReadWriteVelocity    # テスト関数呼び出し
+    test_dynamixel.testReadWriteCurrent(dxl, DXL_IDs)     # テスト関数呼び出し
+    test_dynamixel.testReadWritePosition(dxl, DXL_IDs)    # テスト関数呼び出し
+    test_dynamixel.testReadWriteVelocity(dxl, DXL_IDs)    # テスト関数呼び出し
     
     #testwriteroop(dxl, DXL_IDs)     # 無限ループテストコード
 
