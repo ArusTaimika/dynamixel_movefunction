@@ -252,7 +252,7 @@ class Test_Dynamixel:
         print ("elapsed_time(write):{0}".format(elapsed_time*1000) + "[msec]")
         time.sleep(1.0)
         start = time.time()
-        pos = dyn.readPresentPosition(self, DXL_IDs)
+        pos = dyn.readPresentPosition(DXL_IDs)
         elapsed_time = time.time() - start
         print(pos)
         print ("elapsed_time(read):{0}".format(elapsed_time*1000) + "[msec]")
