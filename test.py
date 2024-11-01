@@ -10,11 +10,12 @@ def __init__():
     dxl = Dynamixel(DEVICENAME, BAUDRATE)   # Dynamixelクラスイニシャライズ
     dxl.setRecommendedValue(DXL_IDs)        # 動かすサーボの初期化
     
+    print("--------------| Test start |--------------")
     test_dynamixel = Test_Dynamixel()
     test_dynamixel.testReadWriteCurrent(dxl, DXL_IDs)     # テスト関数呼び出し
     test_dynamixel.testReadWritePosition(dxl, DXL_IDs)    # テスト関数呼び出し
     test_dynamixel.testReadWriteVelocity(dxl, DXL_IDs)    # テスト関数呼び出し
-    
+    print("--------------| End start |--------------")
     #testwriteroop(dxl, DXL_IDs)     # 無限ループテストコード
 
 def testwriteroop(dxl: Dynamixel, DXL_IDs):
