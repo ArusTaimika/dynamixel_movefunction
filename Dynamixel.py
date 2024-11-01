@@ -12,9 +12,9 @@ class Dynamixel:
     # Addr, Size, Name, RW, Default, Range, Unit
     # 8	1	Baud Rate	RW	1	0 ~ 7	-
     ADDR_RETURN_DELAY_TIME  = 9 # 1 RW	250	0 ~ 254	2 [μsec]
-    ADDR_DRIVE_MODE = 8    # 1 RW	0	0 ~ 5	-
+    ADDR_DRIVE_MODE = 10   # 1 RW	0	0 ~ 5	-
     #     1: Reverse mode
-    ADDR_OPERATING_MODE     = 0    # 1 RW	3	0 ~ 16	-
+    ADDR_OPERATING_MODE     = 11    # 1 RW	3	0 ~ 16	-
     #     0: Current Control Mode
     #     1: Velocity Control Mode
     #     3: Position Control Mode
