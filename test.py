@@ -47,7 +47,11 @@ def testReadWriteVelocity(dxl: Dynamixel, DXL_IDs):
         print("------- end test code -------")
         #Torque off
         dxl.writeTorqueEnable(DXL_IDs, [0]* len(DXL_IDs))
-
+    
+    finally:
+        #Torque off
+        dxl.writeTorqueEnable(DXL_IDs, [0]* len(DXL_IDs))
+    
 
 if __name__ == "__main__":
     __init__()
